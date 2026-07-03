@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% import "_icons.html" as icons %}
+{% block title %}About — LocatePondy{% endblock %}
+
+{% block content %}
+<div class="large-title">
+  <h1>About</h1>
+  <p>Why LocatePondy exists, and how it works.</p>
+</div>
+
+<div class="section">
+  <div class="card" style="padding:18px;">
+    <p style="margin:0 0 14px; font-size:15px; line-height:1.6; color:var(--ink);">
+      LocatePondy is a community directory of food shops across Puducherry — from the
+      whitewashed lanes of White Town to the quiet backstreets of Ozhukarai. Every listing
+      is organized by area, so you can explore your own neighborhood or a new one, one
+      street at a time.
+    </p>
+  </div>
+</div>
+
+<div class="section" style="padding-top:0;">
+  <div class="section-title">How it works</div>
+  <div class="list-group">
+    <div class="list-row">
+      <div class="row-icon" style="background:var(--blue-tint); color:var(--blue-dark);">{{ icons.icon('plus-circle', 'icon-18') }}</div>
+      <div class="row-main">
+        <div class="row-title">Anyone can submit a shop</div>
+        <div class="row-sub">Add photos, a description, phone number and location.</div>
+      </div>
+    </div>
+    <div class="list-row">
+      <div class="row-icon" style="background:var(--mustard-tint); color:var(--mustard-dark);">{{ icons.icon('shield', 'icon-18') }}</div>
+      <div class="row-main">
+        <div class="row-title">Every listing is verified</div>
+        <div class="row-sub">Our admin reviews new shops before they go public.</div>
+      </div>
+    </div>
+    <div class="list-row">
+      <div class="row-icon" style="background:var(--pink-tint); color:var(--pink-dark);">{{ icons.icon('star', 'icon-18') }}</div>
+      <div class="row-main">
+        <div class="row-title">Rate and review</div>
+        <div class="row-sub">Leave a star rating and a note for others exploring the area.</div>
+      </div>
+    </div>
+    <div class="list-row">
+      <div class="row-icon" style="background:var(--green-tint); color:var(--green);">{{ icons.icon('map', 'icon-18') }}</div>
+      <div class="row-main">
+        <div class="row-title">Organized area by area</div>
+        <div class="row-sub">Every corner of Puducherry, from White Town to Auroville.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="padding-top:0;">
+  <div class="section-title">Areas covered</div>
+  <div class="chip-scroll" style="padding-left:0; padding-right:0;">
+    {% for area in PONDY_AREAS %}
+      <span class="chip">{{ area }}</span>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}

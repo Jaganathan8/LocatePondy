@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% import "_icons.html" as icons %}
+{% block title %}LocatePondy — Discover Pondicherry's Food Shops{% endblock %}
+
+{% block content %}
+
+<div class="hero">
+  <h1>Every good meal in<br>Pondicherry, mapped.</h1>
+  <p>Discover verified food shops across every area of White Town and beyond — reviewed, rated, and organized by neighborhood.</p>
+  <div class="hero-actions">
+    <a href="{{ url_for('locate') }}" class="btn btn-primary">{{ icons.icon('compass', 'icon-18') }} Start exploring</a>
+    {% if not current_user.is_authenticated %}
+      <a href="{{ url_for('register') }}" class="btn btn-outline">Create account</a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="stats-row">
+  <div class="stat-card">
+    <div class="num">{{ total_shops }}</div>
+    <div class="label">Verified shops</div>
+  </div>
+  <div class="stat-card">
+    <div class="num">{{ total_areas_used }}</div>
+    <div class="label">Areas covered</div>
+  </div>
+  <div class="stat-card">
+    <div class="num">{{ PONDY_AREAS|length }}</div>
+    <div class="label">Total areas</div>
+  </div>
+  <div class="stat-card">
+    <div class="num">{{ SHOP_CATEGORIES|length }}</div>
+    <div class="label">Categories</div>
+  </div>
+</div>
+
+{% if top_shops %}
+<div class="section" style="padding-bottom:4px;">
+  <div class="section-title">Most rated</div>
+</div>
+<div class="horizontal-scroll">
+  {% for shop in top_shops %}
+    {% include "_shop_card.html" %}
+  {% endfor %}
+</div>
+{% endif %}
+
+{% if recent_shops %}
+<div class="section" style="padding-bottom:4px;">
+  <div class="section-title">Newest listings</div>
+</div>
+<div class="horizontal-scroll">
+  {% for shop in recent_shops %}
+    {% include "_shop_card.html" %}
+  {% endfor %}
+</div>
+{% endif %}
+
+{% if not top_shops and not recent_shops %}
+<div class="empty-state">
+  {{ icons.icon('sparkles', 'icon-28') }}
+  <h3>No shops listed yet</h3>
+  <p>Be the first to add a verified shop to LocatePondy.</p>
+</div>
+{% endif %}
+
+<p class="footer-note">🇫🇷 White Town · Heritage Town · Auroville & every corner of Puducherry — © {{ current_year }} LocatePondy</p>
+
+{% endblock %}

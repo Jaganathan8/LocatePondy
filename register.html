@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% import "_icons.html" as icons %}
+{% block title %}Create Account — LocatePondy{% endblock %}
+
+{% block content %}
+<div class="center-page">
+  <div class="card auth-card">
+    <div class="icon-badge">{{ icons.icon('user', 'icon-28') }}</div>
+    <h1>Create your account</h1>
+    <p class="sub">Join LocatePondy to add and manage your own shop listings.</p>
+
+    <form method="POST" action="{{ url_for('register') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="form-group">
+        <label class="form-label">Full name</label>
+        <input class="form-control" type="text" name="name" placeholder="Your name" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-control" type="email" name="email" placeholder="you@example.com" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-control" type="password" name="password" placeholder="8+ characters, with a letter and a number" required>
+        <p class="form-hint">Must be at least 8 characters and include a letter and a number.</p>
+      </div>
+      <button type="submit" class="btn btn-primary block">Create Account</button>
+    </form>
+
+    <p class="auth-switch">Already have an account? <a href="{{ url_for('login') }}">Log in</a></p>
+  </div>
+</div>
+{% endblock %}

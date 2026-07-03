@@ -1,0 +1,40 @@
+{% import "_icons.html" as icons %}
+<a href="{{ url_for('shop_detail', shop_id=shop.id) }}" class="shop-card">
+  <div class="photo-wrap">
+    {% if shop.cover_image %}
+      <img src="{{ url_for('static', filename='uploads/' ~ shop.cover_image) }}" alt="{{ shop.name }}">
+    {% else %}
+      <div class="no-photo">{{ icons.icon('camera', 'icon-24') }}</div>
+    {% endif %}
+
+    {% if show_status is defined and show_status %}
+      <span class="badge {{ shop.status }} badge-float">{{ shop.status|capitalize }}</span>
+    {% elif shop.is_verified %}
+      <span class="badge verified badge-float">{{ icons.icon('check', 'icon-14') }} Verified</span>
+    {% endif %}
+
+    {% if shop.offer_text %}
+      <div class="offer-marquee"><span>🎉 {{ shop.offer_text }} &nbsp;&nbsp;&nbsp; 🎉 {{ shop.offer_text }}</span></div>
+    {% endif %}
+    <div class="shutter-strip"></div>
+  </div>
+  <div class="body">
+    <h3 class="name">{{ shop.name }}</h3>
+    <div class="meta">
+      <span>{{ shop.category }}</span>
+      <span class="dot-sep">{{ shop.area }}</span>
+    </div>
+    <div class="meta" style="margin-top:6px;">
+      {% if shop.rating_count %}
+        <span class="stars">
+          {% for i in range(1,6) %}
+            {{ icons.icon('star' if i <= shop.average_rating|round(0,'floor') else 'star-outline') }}
+          {% endfor %}
+        </span>
+        <span class="rating-count">{{ shop.average_rating }} ({{ shop.rating_count }})</span>
+      {% else %}
+        <span class="rating-count">No ratings yet</span>
+      {% endif %}
+    </div>
+  </div>
+</a>

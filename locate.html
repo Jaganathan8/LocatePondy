@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% import "_icons.html" as icons %}
+{% block title %}Locate — LocatePondy{% endblock %}
+
+{% block content %}
+<div class="large-title">
+  <h1>Locate</h1>
+  <p>Browse verified shops, area by area.</p>
+</div>
+
+<form method="GET" action="{{ url_for('locate') }}" id="locate-filter-form">
+  <div class="search-bar">
+    {{ icons.icon('search', 'icon-18') }}
+    <input type="text" name="q" placeholder="Search shop names…" value="{{ search_q }}">
+  </div>
+
+  <div class="container" style="display:flex; gap:8px; padding-bottom:12px;">
+    <select class="form-control" name="area" data-auto-submit style="flex:1; font-size:14px; padding:10px 30px 10px 12px;">
+      <option value="">All areas</option>
+      {% for area in PONDY_AREAS %}
+        <option value="{{ area }}" {{ 'selected' if area_filter == area }}>{{ area }}</option>
+      {% endfor %}
+    </select>
+    <select class="form-control" name="category" data-auto-submit style="flex:1; font-size:14px; padding:10px 30px 10px 12px;">
+      <option value="">All categories</option>
+      {% for cat in SHOP_CATEGORIES %}
+        <option value="{{ cat }}" {{ 'selected' if category_filter == cat }}>{{ cat }}</option>
+      {% endfor %}
+    </select>
+  </div>
+</form>
+
+{% set has_filters = area_filter or category_filter or search_q %}
+{% set any_results = shops_by_area.values() | map('length') | sum > 0 %}
+
+{% if not any_results %}
+<div class="empty-state">
+  {{ icons.icon('map-pin', 'icon-28') }}
+  <h3>No shops found</h3>
+  <p>{% if has_filters %}Try a different search or filter.{% else %}No verified shops yet — check back soon.{% endif %}</p>
+</div>
+{% endif %}
+
+{% for area, shops in shops_by_area.items() %}
+  {% if shops or not has_filters %}
+  <details class="area-accordion" {{ 'open' if shops and (has_filters or loop.first) }}>
+    <summary class="area-summary">
+      <span class="area-name">{{ area }}</span>
+      <span style="display:flex; align-items:center; gap:8px;">
+        <span class="area-count">{{ shops|length }}</span>
+        {{ icons.icon('chevron-down', 'icon-16') }}
+      </span>
+    </summary>
+    <div class="area-body">
+      {% if shops %}
+        {% for shop in shops %}
+          {% include "_shop_card.html" %}
+        {% endfor %}
+      {% else %}
+        <p class="empty-note">No shops listed in {{ area }} yet.</p>
+      {% endif %}
+    </div>
+  </details>
+  {% endif %}
+{% endfor %}
+
+{% if current_user.is_authenticated and not current_user.is_admin %}
+<div class="section">
+  <a href="{{ url_for('add_shop') }}" class="btn btn-primary block">{{ icons.icon('plus-circle', 'icon-18') }} Add your shop</a>
+</div>
+{% endif %}
+
+{% endblock %}

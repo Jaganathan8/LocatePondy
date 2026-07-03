@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% import "_icons.html" as icons %}
+{% block title %}Add a Shop — LocatePondy{% endblock %}
+
+{% block content %}
+<div class="large-title">
+  <h1>Add a shop</h1>
+  <p>Submitted listings are reviewed before going live.</p>
+</div>
+
+<div class="section" style="padding-top:0;">
+  <form method="POST" action="{{ url_for('add_shop') }}" enctype="multipart/form-data" class="card" style="padding:18px;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <div class="form-group">
+      <label class="form-label">Shop name</label>
+      <input class="form-control" type="text" name="name" id="shop-name" maxlength="{{ name_max }}" required>
+      <p class="form-hint char-count" data-char-count-for="shop-name" data-max="{{ name_max }}">0 / {{ name_max }}</p>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Category</label>
+      <select class="form-control" name="category" required>
+        <option value="" disabled selected>Choose a category</option>
+        {% for cat in SHOP_CATEGORIES %}<option value="{{ cat }}">{{ cat }}</option>{% endfor %}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Area</label>
+      <select class="form-control" name="area" required>
+        <option value="" disabled selected>Choose an area</option>
+        {% for area in PONDY_AREAS %}<option value="{{ area }}">{{ area }}</option>{% endfor %}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Phone number</label>
+      <input class="form-control" type="tel" name="phone_number" placeholder="10-digit phone number" required>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <textarea class="form-control" name="description" placeholder="What makes this place worth visiting?"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Address</label>
+      <input class="form-control" type="text" name="address" placeholder="Street, landmark">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Google Maps link <span style="font-weight:400; color:var(--ink-faint);">(optional)</span></label>
+      <input class="form-control" type="url" name="map_link" placeholder="https://maps.google.com/…">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Scrolling offer text <span style="font-weight:400; color:var(--ink-faint);">(optional)</span></label>
+      <input class="form-control" type="text" name="offer_text" maxlength="200" placeholder="e.g. 20% off this weekend!">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Photos <span style="font-weight:400; color:var(--ink-faint);">(up to {{ max_photos }})</span></label>
+      <label class="file-drop" for="shop-images">
+        {{ icons.icon('camera', 'icon-24') }}
+        <div id="drop-label">Tap to choose photos</div>
+        <input type="file" id="shop-images" name="images" accept="image/png,image/jpeg,image/gif,image/webp"
+               multiple data-photo-input data-max-photos="{{ max_photos }}"
+               data-preview-target="#photo-previews" data-drop-label="#drop-label">
+      </label>
+      <div class="thumb-row" id="photo-previews"></div>
+    </div>
+
+    <button type="submit" class="btn btn-primary block" style="margin-top:6px;">Submit for review</button>
+  </form>
+</div>
+{% endblock %}

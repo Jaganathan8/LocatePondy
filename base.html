@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+{% import "_icons.html" as icons %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#FAF6EF">
+  <title>{% block title %}LocatePondy — Food Shops of Pondicherry{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <nav class="ios-navbar">
+    <a href="{{ url_for('home') }}" class="brand">
+      <span class="pin">{{ icons.icon('map-pin', 'brand-pin-icon') }}</span>
+      LocatePondy
+    </a>
+    <div class="nav-actions">
+      {% if current_user.is_authenticated and current_user.is_admin %}
+        <a href="{{ url_for('admin_dashboard') }}" class="nav-icon-btn" aria-label="Admin dashboard">{{ icons.icon('shield', 'icon-20') }}</a>
+      {% elif current_user.is_authenticated %}
+        <a href="{{ url_for('my_shops') }}" class="nav-icon-btn" aria-label="My shops">{{ icons.icon('user', 'icon-20') }}</a>
+      {% else %}
+        <a href="{{ url_for('login') }}" class="nav-icon-btn" aria-label="Log in">{{ icons.icon('log-in', 'icon-20') }}</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <div class="toast-stack">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="toast {{ 'danger' if category == 'danger' else category }}">
+            <span class="dot"></span>
+            <span class="msg">{{ message }}</span>
+            <span class="close">{{ icons.icon('x', 'icon-14') }}</span>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <main class="app-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <nav class="ios-tabbar">
+    <a href="{{ url_for('home') }}" class="tab-item {{ 'active' if request.endpoint == 'home' }}">
+      {{ icons.icon('home') }}<span>Home</span>
+    </a>
+    <a href="{{ url_for('locate') }}" class="tab-item {{ 'active' if request.endpoint == 'locate' }}">
+      {{ icons.icon('compass') }}<span>Locate</span>
+    </a>
+
+    {% if current_user.is_authenticated and not current_user.is_admin %}
+      <a href="{{ url_for('add_shop') }}" class="tab-item {{ 'active' if request.endpoint == 'add_shop' }}">
+        {{ icons.icon('plus-circle') }}<span>Add Shop</span>
+      </a>
+      <a href="{{ url_for('my_shops') }}" class="tab-item {{ 'active' if request.endpoint == 'my_shops' }}">
+        {{ icons.icon('grid') }}<span>My Shops</span>
+      </a>
+      <a href="{{ url_for('logout') }}" class="tab-item">
+        {{ icons.icon('log-out') }}<span>Logout</span>
+      </a>
+    {% elif current_user.is_authenticated and current_user.is_admin %}
+      <a href="{{ url_for('admin_dashboard') }}" class="tab-item {{ 'active' if request.endpoint and request.endpoint.startswith('admin_') }}">
+        {{ icons.icon('shield') }}<span>Admin</span>
+      </a>
+      <a href="{{ url_for('about') }}" class="tab-item {{ 'active' if request.endpoint == 'about' }}">
+        {{ icons.icon('info') }}<span>About</span>
+      </a>
+      <a href="{{ url_for('admin_logout') }}" class="tab-item">
+        {{ icons.icon('log-out') }}<span>Logout</span>
+      </a>
+    {% else %}
+      <a href="{{ url_for('about') }}" class="tab-item {{ 'active' if request.endpoint == 'about' }}">
+        {{ icons.icon('info') }}<span>About</span>
+      </a>
+      <a href="{{ url_for('login') }}" class="tab-item {{ 'active' if request.endpoint == 'login' }}">
+        {{ icons.icon('log-in') }}<span>Log In</span>
+      </a>
+    {% endif %}
+  </nav>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

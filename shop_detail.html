@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% import "_icons.html" as icons %}
+{% block title %}{{ shop.name }} — LocatePondy{% endblock %}
+
+{% block content %}
+
+<div class="carousel" data-carousel>
+  {% if shop.images %}
+    <div class="carousel-track">
+      {% for img in shop.images %}
+        <img src="{{ url_for('static', filename='uploads/' ~ img.filename) }}" alt="{{ shop.name }}">
+      {% endfor %}
+    </div>
+    {% if shop.images|length > 1 %}
+    <div class="carousel-dots">
+      {% for img in shop.images %}<span class="{{ 'active' if loop.first }}"></span>{% endfor %}
+    </div>
+    {% endif %}
+  {% else %}
+    <div class="no-photo">{{ icons.icon('camera', 'icon-28') }}</div>
+  {% endif %}
+
+  {% if shop.offer_text %}
+    <div class="offer-marquee" style="bottom:0;"><span>🎉 {{ shop.offer_text }} &nbsp;&nbsp;&nbsp; 🎉 {{ shop.offer_text }}</span></div>
+  {% endif %}
+</div>
+
+<div class="detail-header">
+  <div class="title-row">
+    <div>
+      <h1>{{ shop.name }}</h1>
+      <p class="cat-area">{{ shop.category }} · {{ shop.area }}</p>
+    </div>
+    {% if shop.is_verified %}
+      <span class="badge verified">{{ icons.icon('check', 'icon-14') }} Verified</span>
+    {% elif current_user.is_authenticated and (current_user.is_admin or shop.owner_id == current_user.id) %}
+      <span class="badge {{ shop.status }}">{{ shop.status|capitalize }}</span>
+    {% endif %}
+  </div>
+
+  {% if shop.rating_count %}
+    <span class="stars">
+      {% for i in range(1,6) %}{{ icons.icon('star' if i <= shop.average_rating|round(0,'floor') else 'star-outline') }}{% endfor %}
+    </span>
+    <span class="rating-count">{{ shop.average_rating }} · {{ shop.rating_count }} rating{{ 's' if shop.rating_count != 1 }}</span>
+  {% else %}
+    <span class="rating-count">No ratings yet</span>
+  {% endif %}
+</div>
+
+<div class="action-row">
+  <a href="tel:{{ shop.phone_number }}" class="btn btn-primary">{{ icons.icon('phone', 'icon-18') }} Call</a>
+  {% if shop.map_link %}
+    <a href="{{ shop.map_link }}" target="_blank" rel="noopener" class="btn btn-secondary">{{ icons.icon('map', 'icon-18') }} Map</a>
+  {% endif %}
+</div>
+
+{% if shop.description or shop.address %}
+<div class="card info-card">
+  {% if shop.description %}
+  <div class="row">
+    {{ icons.icon('sparkles') }}
+    <span>{{ shop.description }}</span>
+  </div>
+  {% endif %}
+  {% if shop.address %}
+  <div class="row">
+    {{ icons.icon('map-pin') }}
+    <span>{{ shop.address }}</span>
+  </div>
+  {% endif %}
+  <div class="row">
+    {{ icons.icon('phone') }}
+    <span>{{ shop.phone_number }}</span>
+  </div>
+</div>
+{% endif %}
+
+{% if shop.status == 'rejected' and (current_user.is_authenticated and (current_user.is_admin or shop.owner_id == current_user.id)) %}
+<div class="section" style="padding-top:0;">
+  <div class="toast danger" style="position:static; animation:none;">
+    <span class="dot"></span>
+    <span class="msg">Rejected: {{ shop.rejection_reason }}</span>
+  </div>
+</div>
+{% endif %}
+
+{% if shop.is_verified %}
+
+  {% if current_user.is_authenticated and not current_user.is_admin %}
+  <div class="card rating-widget" data-star-widget>
+    <div class="section-title" style="margin-bottom:0;">{{ 'Update your rating' if user_rating else 'Rate this shop' }}</div>
+    <form method="POST" action="{{ url_for('rate_shop', shop_id=shop.id) }}" id="rate-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="stars" value="{{ user_rating or 0 }}">
+      <div class="big-star-row">
+        {% for i in range(1,6) %}
+          <button type="submit" data-star="{{ i }}" onclick="document.getElementById('rate-form').querySelector('[name=stars]').value={{ i }}">
+            {{ icons.icon('star' if user_rating and i <= user_rating else 'star-outline') }}
+          </button>
+        {% endfor %}
+      </div>
+    </form>
+  </div>
+  {% endif %}
+
+  <div class="section">
+    <div class="section-title">Feedback ({{ feedbacks|length }})</div>
+    <div class="card" style="padding:6px 16px;">
+      {% if current_user.is_authenticated and not current_user.is_admin %}
+      <form method="POST" action="{{ url_for('add_feedback', shop_id=shop.id) }}" style="padding:12px 0; border-bottom:0.5px solid var(--hairline);">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <textarea class="form-control" name="message" placeholder="Share your experience…" required style="min-height:70px;"></textarea>
+        <button type="submit" class="btn btn-primary small" style="margin-top:8px;">Post feedback</button>
+      </form>
+      {% endif %}
+
+      {% for fb in feedbacks %}
+        <div class="feedback-item">
+          <div class="author">{{ fb.user.name }}</div>
+          <div class="msg">{{ fb.message }}</div>
+          <div class="date">{{ fb.created_at.strftime('%d %b %Y') }}</div>
+        </div>
+      {% else %}
+        <p class="empty-note" style="padding:14px 0;">No feedback yet — be the first to share your experience.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+{% endif %}
+
+{% endblock %}

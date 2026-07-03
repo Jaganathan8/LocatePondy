@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% import "_icons.html" as icons %}
+{% block title %}My Shops — LocatePondy{% endblock %}
+
+{% block content %}
+<div class="large-title">
+  <h1>My Shops</h1>
+  <p>Track the review status of everything you've submitted.</p>
+</div>
+
+<div class="section" style="padding-top:0;">
+  <a href="{{ url_for('add_shop') }}" class="btn btn-primary block" style="margin-bottom:16px;">
+    {{ icons.icon('plus-circle', 'icon-18') }} Add another shop
+  </a>
+
+  {% if shops %}
+    {% for shop in shops %}
+      {% set show_status = true %}
+      {% include "_shop_card.html" %}
+      {% if shop.status == 'rejected' and shop.rejection_reason %}
+        <p style="font-size:12.5px; color:var(--red); margin:-10px 0 14px 4px;">Reason: {{ shop.rejection_reason }}</p>
+      {% endif %}
+    {% endfor %}
+  {% else %}
+    <div class="empty-state">
+      {{ icons.icon('grid', 'icon-28') }}
+      <h3>No shops yet</h3>
+      <p>Shops you submit will appear here with their review status.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
